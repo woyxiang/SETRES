@@ -1,0 +1,28 @@
+﻿#include "lang.bi"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+STRINGTABLE
+BEGIN
+    ABOUT_ME    "Command line program to change screen resolution, colour depth and refresh frequency"
+    USAGE       "USAGE"
+    hXXXX       "Horizontal size of screen in pixels"         
+    vXXXX       "Vertical size of screen in pixels"         
+    bXX         "Bit (colour) depth such as 8, 16 24, 32 "   
+    fXX         "Refresh frequncy in Hertz, e.g. 60, 75, 85 "
+    EXAMPLES    "EXAMPLES"
+    WARNING     "WARNING"
+    THE_WARNING "SETRES does not check the capabilities of your hardware. Windows is supposed to reject unsupported settings but do not rely on this. If you specify unsupported settings, I WILL NOT ACCEPT RESPONSIBILITY FOR THE CONSEQUENCES."
+END
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+STRINGTABLE
+BEGIN
+    ABOUT_ME    "一个更改屏幕分辨率、色深和刷新频率的命令行程序。"
+    USAGE       "用法"
+    hXXXX       "屏幕的水平尺寸（像素）"         
+    vXXXX       "屏幕垂直尺寸（像素）"         
+    bXX         "比特（色彩）深度，如 8、16 24、32"   
+    fXX         "刷新频率（赫兹），例如 60、75、85"
+    EXAMPLES    "例如"
+    WARNING     "警告"
+    THE_WARNING "SETRES 不检查硬件功能。Windows 应该会拒绝不支持的设置，但请不要依赖这一点。如果你指定了不支持的设置，并且在硬件损坏的情况下，我将不承担责任。"
+END
