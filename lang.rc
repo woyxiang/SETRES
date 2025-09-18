@@ -2,7 +2,7 @@
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 STRINGTABLE
 BEGIN
-    ABOUT_ME    "Command line program to change screen resolution, colour depth and refresh frequency"
+    ABOUT_ME    "Command line program to change screen resolution, colour depth and refresh\n frequency"
     USAGE       "USAGE"
     hXXXX       "Horizontal size of screen in pixels"         
     vXXXX       "Vertical size of screen in pixels"         
@@ -10,7 +10,7 @@ BEGIN
     fXX         "Refresh frequncy in Hertz, e.g. 60, 75, 85 "
     EXAMPLES    "EXAMPLES"
     WARNING     "WARNING"
-    THE_WARNING "SETRES does not check the capabilities of your hardware. Windows is supposed to reject unsupported settings but do not rely on this. If you specify unsupported settings, I WILL NOT ACCEPT RESPONSIBILITY FOR THE CONSEQUENCES."
+    THE_WARNING "SETRES does not check the capabilities of your hardware. Windows\n is supposed to reject unsupported settings but do not rely on this.\n If you specify unsupported settings, I WILL NOT ACCEPT RESPONSIBILITY\n FOR THE CONSEQUENCES."
 END
 
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -24,5 +24,5 @@ BEGIN
     fXX         "刷新频率（赫兹），例如 60、75、85"
     EXAMPLES    "例如"
     WARNING     "警告"
-    THE_WARNING "SETRES 不检查硬件功能。Windows 应该会拒绝不支持的设置，但请不要依赖这一点。如果你指定了不支持的设置，并且在硬件损坏的情况下，我将不承担责任。"
+    THE_WARNING "SETRES 不检查硬件功能。Windows 应该会拒绝不支持的设置，但请不要依赖这\n一点。如果你指定了不支持的设置，并且在硬件损坏的情况下，我将不承担责任。"
 END
