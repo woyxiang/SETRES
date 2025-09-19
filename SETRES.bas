@@ -2,8 +2,7 @@
 #include "windows.bi"
 #include "lang.bi"
 #include "string.bi"
-
-#define INDENT wString( 8, " " )
+#define INDENT space(8)
 
 Declare Sub ErrPage(Byval index As Integer)
 Dim position As Integer, arg As String
@@ -14,10 +13,8 @@ Dim As long result = -10
 function GetResource(byval uID as UINT) as long
     dim buffer as wstring * 256
     dim result as long
-    dim outString as wstring * 256
     result = LoadString(GetModuleHandle(NULL), uID, @buffer, 256)
-    outString = INDENT & replace(s, "\n", "\n" & INDENT)
-    print outString
+    print buffer
     return result
 end function
 
@@ -119,23 +116,23 @@ End If
 
 Select Case result
     Case DISP_CHANGE_SUCCESSFUL
-        Print "设置更改成功。"
+        GetResource dcSUCCESSFUL
     Case DISP_CHANGE_BADDUALVIEW
-        print "设置更改失败，因为系统支持 DualView。"
+        GetResource dcBADDUALVIEW
     Case DISP_CHANGE_BADFLAGS
-        Print "传入了一组无效的标志。"
+        GetResource dcBADFLAGS
     Case DISP_CHANGE_BADMODE
-        print "不支持图形模式。"
+        GetResource dcBADMODE
     Case DISP_CHANGE_BADPARAM
-        print "传入了无效参数。 这可以包括无效标志或标志组合。"
+        GetResource dcBADPARAM
     Case DISP_CHANGE_FAILED
-        print "显示驱动程序未通过指定的图形模式。"
+        GetResource dcFAILED
     Case DISP_CHANGE_NOTUPDATED
-        print "无法将设置写入注册表。"
+        GetResource dcNOTUPDATED
     Case DISP_CHANGE_RESTART
-        Print "必须重启计算机才能使图形模式正常工作。"
+        GetResource dcRESTART
     Case Else
-        Print "未知错误"
+        GetResource dcUNKNOWN
 End Select
 
 Sub ErrPage(Byval index As Integer)
@@ -143,12 +140,13 @@ Sub ErrPage(Byval index As Integer)
     GetResource ABOUT_ME
     Print 
     GetResource USAGE
-    Print INDENT;"SETRES hXXXX vXXXX [fXX] [bXX]"
-    Print INDENT;"SETRES fXX [bXX]"
-    Print INDENT;:GetResource hXXXX
-    Print INDENT;:GetResource vXXXX
-    Print INDENT;:GetResource bXX
-    Print INDENT;:GetResource fXX
+    Print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
+    Print INDENT;"SETRES f<XX> [b<XX>]"
+    print
+    Print INDENT;"h<XXXX> = ";:GetResource hXXXX
+    Print INDENT;"v<XXXX> = ";:GetResource vXXXX
+    Print INDENT;"  b<XX> = ";:GetResource bXX
+    Print INDENT;"  f<XX> = ";:GetResource fXX
     Print 
     GetResource EXAMPLES
     Print INDENT;"SETRES h1024 v768"
@@ -163,14 +161,10 @@ Sub ErrPage(Byval index As Integer)
     If index = 1 Then
     	Print "错误： 提供的参数无法识别"
 		Print ""
-    	'Print "任意键继续"
-    	'Sleep
     	Stop index
     Elseif index = 0 Then
     	Print "错误： 提供的命令行参数数量错误。"
 		Print ""    	
-    	'Print "任意键继续"
-    	'Sleep
     	Stop index    	
     EndIf
 End Sub
