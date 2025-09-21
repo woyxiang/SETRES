@@ -17,3 +17,6 @@
 #define dcRESTART     016
 #define dcSUCCESSFUL  017
 #define dcUNKNOWN     018
+
+#define WRONG_NUMBER  019
+#define UNRECOGNISED  020

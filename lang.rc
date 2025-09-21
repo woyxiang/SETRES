@@ -21,6 +21,8 @@ BEGIN
     dcNOTUPDATED  "Unable to write settings to the registry."
     dcRESTART     "The computer must be restarted for the graphics mode to work."
     dcUNKNOWN     "An unknown error occurred."
+    WRONG_NUMBER  "ERROR: Wrong number of command line parameters supplied."
+    UNRECOGNISED  "ERROR: Unrecognised parameter supplied"
 END
 
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -45,4 +47,6 @@ BEGIN
     dcNOTUPDATED  "无法将设置写入注册表。"
     dcRESTART     "必须重启计算机才能使图形模式正常工作。"
     dcUNKNOWN     "未知错误。"
+    WRONG_NUMBER  "错误：提供的命令行参数数量错误。"
+    UNRECOGNISED  "错误：提供了无法识别的参数。"
 END
