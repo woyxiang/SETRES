@@ -3,6 +3,8 @@
 #include "lang.bi"
 #include "String.bi"
 #define INDENT Space(8)
+#define PrintError(text) Color 12 : Print text : Color 7
+
 
 Declare Sub ErrPage(Byval index As Integer)
 Dim position As Integer, arg As String
@@ -10,12 +12,12 @@ Dim As Integer Argh, Argv, Argb, Argf
 Dim As DEVMODE dm
 Dim As Long result = -10
 
-Function GetResource(Byval uID As UINT) As Long
+Function GetResource(Byval uID As UINT) As String
     Dim buffer As Wstring * 256
     Dim result As Long
     result = LoadString(GetModuleHandle(NULL), uID, @buffer, 256)
-    Print buffer
-    Return result
+    'Print buffer
+    Return str(buffer)
 End Function
 
 'Initialize arg variables
@@ -104,56 +106,56 @@ End If
 
 Select Case result
     Case DISP_CHANGE_SUCCESSFUL
-        GetResource dcSUCCESSFUL
+        Print GetResource(dcSUCCESSFUL)
     Case DISP_CHANGE_BADDUALVIEW
-        GetResource dcBADDUALVIEW
+        Print GetResource(dcBADDUALVIEW)
     Case DISP_CHANGE_BADFLAGS
-        GetResource dcBADFLAGS
+        Print GetResource(dcBADFLAGS)
     Case DISP_CHANGE_BADMODE
-        GetResource dcBADMODE
+        Print GetResource(dcBADMODE)
     Case DISP_CHANGE_BADPARAM
-        GetResource dcBADPARAM
+        Print GetResource(dcBADPARAM)
     Case DISP_CHANGE_FAILED
-        GetResource dcFAILED
+        Print GetResource(dcFAILED)
     Case DISP_CHANGE_NOTUPDATED
-        GetResource dcNOTUPDATED
+        Print GetResource(dcNOTUPDATED)
     Case DISP_CHANGE_RESTART
-        GetResource dcRESTART
+        Print GetResource(dcRESTART)
     Case Else
-        GetResource dcUNKNOWN
+        Print GetResource(dcUNKNOWN)
 End Select
 
 Sub ErrPage(Byval index As Integer)
     Print
-    GetResource ABOUT_ME
+    Print GetResource(ABOUT_ME)
     Print 
-    GetResource USAGE
+    Print GetResource(USAGE)
     Print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
     Print INDENT;"SETRES f<XX> [b<XX>]"
     Print
-    Print INDENT;"h<XXXX> = ";:GetResource hXXXX
-    Print INDENT;"v<XXXX> = ";:GetResource vXXXX
-    Print INDENT;"  b<XX> = ";:GetResource bXX
-    Print INDENT;"  f<XX> = ";:GetResource fXX
+    Print INDENT;"h<XXXX> = ";:print GetResource(hXXXX)
+    Print INDENT;"v<XXXX> = ";:Print GetResource(vXXXX)
+    Print INDENT;"  b<XX> = ";:Print GetResource(bXX)
+    Print INDENT;"  f<XX> = ";:Print GetResource(fXX)
     Print 
-    GetResource EXAMPLES
+    Print GetResource(EXAMPLES)
     Print INDENT;"SETRES h1024 v768"
     Print INDENT;"SETRES h800 v600 b24"
     Print INDENT;"SETRES h1280 v1024 b32 f75"
     Print INDENT;"SETRES f75"
     Print 
-    GetResource WARNING
-    Print INDENT;:GetResource THE_WARNING
+    Print GetResource(WARNING)
+    Print INDENT;:Print GetResource(THE_WARNING)
     Print 
     Print 
     If index = 1 Then
     	'Print "错误： 提供的参数无法识别"
-        GetResource UNRECOGNISED
-		Print
+        PrintError(GetResource(UNRECOGNISED))
+		print
     	Stop index
     Elseif index = 0 Then
     	'Print "错误： 提供的命令行参数数量错误。"
-        GetResource WRONG_NUMBER
+        PrintError(GetResource(WRONG_NUMBER))
 		Print    	
     	Stop index    	
     EndIf
