@@ -16,7 +16,7 @@ jobs:
       with:
         path: |
           ~\scoop
-        key: ${{ runner.os }}-scoop-${{ hashFiles('**/*.bas', '**/*.rc') }}
+        key: ${{ runner.os }}-scoop-v1
         restore-keys: |
           ${{ runner.os }}-scoop-
 
