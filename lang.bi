@@ -1,0 +1,22 @@
+#define ABOUT_ME      001
+#define USAGE         002
+#define hXXXX         003
+#define vXXXX         004
+#define bXX           005
+#define fXX           006
+#define EXAMPLES      007
+#define WARNING       008
+#define THE_WARNING   009
+
+#define dcBADDUALVIEW 010
+#define dcBADFLAGS    011
+#define dcBADMODE     012
+#define dcBADPARAM    013
+#define dcFAILED      014
+#define dcNOTUPDATED  015
+#define dcRESTART     016
+#define dcSUCCESSFUL  017
+#define dcUNKNOWN     018
+
+#define WRONG_NUMBER  019
+#define UNRECOGNISED  020
