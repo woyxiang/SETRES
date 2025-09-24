@@ -20,20 +20,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-scoop-
 
-    - name: Install With Scoop
+    - name: Compile binaries
       shell: powershell
       run: |
         Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
         irm get.scoop.sh | iex
         scoop install https://github.com/woyxiang/slug/raw/refs/heads/master/bucket/FreeBASIC-winlibs-gcc.json
 
-    - name: Compile binaries
-      shell: powershell
-      run: |
         mkdir 32-bit, 64-bit -Force
         fbc32 setres.bas lang.rc -x 32-bit/setres.exe
         fbc64 setres.bas lang.rc -x 64-bit/setres.exe
-
     - name: Verify executables
       shell: powershell
       run: |
@@ -49,4 +45,3 @@ jobs:
           32-bit/setres.exe
           64-bit/setres.exe
         retention-days: 30
-        
