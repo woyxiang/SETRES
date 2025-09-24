@@ -6,7 +6,6 @@
 #define PrintError(text) Color 12 : Print text : Color 7
 
 
-Declare Sub ErrPage(Byval index As Integer)
 Dim position As Integer, arg As String
 Dim As Integer Argh, Argv, Argb, Argf
 Dim As DEVMODE dm
@@ -19,6 +18,43 @@ Function GetResource(Byval uID As UINT) As String
     'Print buffer
     Return str(buffer)
 End Function
+
+Sub ErrPage(Byval index As Integer)
+    Print
+    Print GetResource(ABOUT_ME)
+    Print 
+    Print GetResource(USAGE)
+    Print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
+    Print INDENT;"SETRES f<XX> [b<XX>]"
+    Print
+    Print INDENT;"h<XXXX> = ";:print GetResource(hXXXX)
+    Print INDENT;"v<XXXX> = ";:Print GetResource(vXXXX)
+    Print INDENT;"  b<XX> = ";:Print GetResource(bXX)
+    Print INDENT;"  f<XX> = ";:Print GetResource(fXX)
+    Print 
+    Print GetResource(EXAMPLES)
+    Print INDENT;"SETRES h1024 v768"
+    Print INDENT;"SETRES h800 v600 b24"
+    Print INDENT;"SETRES h1280 v1024 b32 f75"
+    Print INDENT;"SETRES f75"
+    Print 
+    Print GetResource(WARNING)
+    Print INDENT;:Print GetResource(THE_WARNING)
+    Print 
+    Print 
+    If index = 1 Then
+    	'Print "错误： 提供的参数无法识别"
+        PrintError(GetResource(UNRECOGNISED))
+		print
+    	Stop index
+    Elseif index = 0 Then
+    	'Print "错误： 提供的命令行参数数量错误。"
+        PrintError(GetResource(WRONG_NUMBER))
+		Print    	
+    	Stop index    	
+    EndIf
+End Sub
+
 
 'Initialize arg variables
 Argh = -1
@@ -125,40 +161,5 @@ Select Case result
         Print GetResource(dcUNKNOWN)
 End Select
 
-Sub ErrPage(Byval index As Integer)
-    Print
-    Print GetResource(ABOUT_ME)
-    Print 
-    Print GetResource(USAGE)
-    Print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
-    Print INDENT;"SETRES f<XX> [b<XX>]"
-    Print
-    Print INDENT;"h<XXXX> = ";:print GetResource(hXXXX)
-    Print INDENT;"v<XXXX> = ";:Print GetResource(vXXXX)
-    Print INDENT;"  b<XX> = ";:Print GetResource(bXX)
-    Print INDENT;"  f<XX> = ";:Print GetResource(fXX)
-    Print 
-    Print GetResource(EXAMPLES)
-    Print INDENT;"SETRES h1024 v768"
-    Print INDENT;"SETRES h800 v600 b24"
-    Print INDENT;"SETRES h1280 v1024 b32 f75"
-    Print INDENT;"SETRES f75"
-    Print 
-    Print GetResource(WARNING)
-    Print INDENT;:Print GetResource(THE_WARNING)
-    Print 
-    Print 
-    If index = 1 Then
-    	'Print "错误： 提供的参数无法识别"
-        PrintError(GetResource(UNRECOGNISED))
-		print
-    	Stop index
-    Elseif index = 0 Then
-    	'Print "错误： 提供的命令行参数数量错误。"
-        PrintError(GetResource(WRONG_NUMBER))
-		Print    	
-    	Stop index    	
-    EndIf
-End Sub
 
 
