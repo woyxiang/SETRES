@@ -1,59 +1,59 @@
 ﻿#define unicode
 #include "windows.bi"
 #include "lang.bi"
-#include "String.bi"
-#define INDENT Space(8)
-#define PrintError(text) Color 12 : Print text : Color 7
+#include "string.bi"
+#define INDENT space(8)
+#define PrintError(text) color 12 : print text : color 7
 
 
-Dim position As Integer, arg As String
-Dim As Integer Argh, Argv, Argb, Argf
-Dim As DEVMODE dm
-Dim As Long result = -10
+dim position as integer, arg as string
+dim as integer Argh, Argv, Argb, Argf
+dim as DEVMODE dm
+dim as long result = -10
 
-Function GetResource(Byval uID As UINT) As String
-    Dim buffer As Wstring * 256
-    Dim result As Long
+function GetResource(byval uID as UINT) as string
+    dim buffer as wstring * 256
+    dim result as long
     result = LoadString(GetModuleHandle(NULL), uID, @buffer, 256)
-    'Print buffer
-    Return str(buffer)
-End Function
+    'print buffer
+    return str(buffer)
+end function
 
-Sub ErrPage(Byval index As Integer)
-    Print
-    Print GetResource(ABOUT_ME)
-    Print 
-    Print GetResource(USAGE)
-    Print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
-    Print INDENT;"SETRES f<XX> [b<XX>]"
-    Print
-    Print INDENT;"h<XXXX> = ";:print GetResource(hXXXX)
-    Print INDENT;"v<XXXX> = ";:Print GetResource(vXXXX)
-    Print INDENT;"  b<XX> = ";:Print GetResource(bXX)
-    Print INDENT;"  f<XX> = ";:Print GetResource(fXX)
-    Print 
-    Print GetResource(EXAMPLES)
-    Print INDENT;"SETRES h1024 v768"
-    Print INDENT;"SETRES h800 v600 b24"
-    Print INDENT;"SETRES h1280 v1024 b32 f75"
-    Print INDENT;"SETRES f75"
-    Print 
-    Print GetResource(WARNING)
-    Print INDENT;:Print GetResource(THE_WARNING)
-    Print 
-    Print 
-    If index = 1 Then
-    	'Print "错误： 提供的参数无法识别"
+sub ErrPage(byval index as integer)
+    print
+    print GetResource(ABOUT_ME)
+    print 
+    print GetResource(USAGE)
+    print INDENT;"SETRES h<XXXX> v<XXXX> [f<XX>] [b<XX>]"
+    print INDENT;"SETRES f<XX> [b<XX>]"
+    print
+    print INDENT;"h<XXXX> = ";:print GetResource(hXXXX)
+    print INDENT;"v<XXXX> = ";:print GetResource(vXXXX)
+    print INDENT;"  b<XX> = ";:print GetResource(bXX)
+    print INDENT;"  f<XX> = ";:print GetResource(fXX)
+    print 
+    print GetResource(EXAMPLES)
+    print INDENT;"SETRES h1024 v768"
+    print INDENT;"SETRES h800 v600 b24"
+    print INDENT;"SETRES h1280 v1024 b32 f75"
+    print INDENT;"SETRES f75"
+    print 
+    print GetResource(WARNING)
+    print INDENT;:print GetResource(THE_WARNING)
+    print 
+    print 
+    if index = 1 then
+    	'print "错误： 提供的参数无法识别"
         PrintError(GetResource(UNRECOGNISED))
 		print
-    	Stop index
-    Elseif index = 0 Then
-    	'Print "错误： 提供的命令行参数数量错误。"
+    	stop index
+    elseif index = 0 then
+    	'print "错误： 提供的命令行参数数量错误。"
         PrintError(GetResource(WRONG_NUMBER))
-		Print    	
-    	Stop index    	
+		print    	
+    	stop index    	
     EndIf
-End Sub
+end sub
 
 
 'Initialize arg variables
@@ -65,101 +65,101 @@ Argf = -1
 
 'Parsing args
 position = 1
-Do
-	arg = Command(position)
-    If (Len(arg) = 0) Then 'Exit parsing If no args
-        Exit Do
-    End If
+do
+	arg = command(position)
+    if (len(arg) = 0) then 'exit parsing if no args
+        exit do
+    end if
     
-    Select Case Left(arg, 1)
-        Case "h"
-            Argh = Abs(Int(Val(Mid(arg, 2))))
-        Case "v"
-            Argv = Abs(Int(Val(Mid(arg, 2))))
-        Case "b"
-            Argb = Abs(Int(Val(Mid(arg, 2))))
-        Case "f"
-            Argf = Abs(Int(Val(Mid(arg, 2))))
-        Case Else
+    select case left(arg, 1)
+        case "h"
+            Argh = abs(int(val(mid(arg, 2))))
+        case "v"
+            Argv = abs(int(val(mid(arg, 2))))
+        case "b"
+            Argb = abs(int(val(mid(arg, 2))))
+        case "f"
+            Argf = abs(int(val(mid(arg, 2))))
+        case else
             ErrPage 1
-    End Select    
+    end select    
     position += 1
-Loop
-If (position = 1) Then
+loop
+if (position = 1) then
     ErrPage 0
-End If
+end if
 
 'Initialize
-memset @dm, 0, Sizeof(dm)
-dm.dmSize = Sizeof(dm)
+memset @dm, 0, sizeof(dm)
+dm.dmSize = sizeof(dm)
 
 'Submit changes
-If (Argh=-1) Xor (Argv=-1) Then
+if (Argh=-1) xor (Argv=-1) then
     ErrPage 0
-Elseif Argh <> -1 And Argv <> -1 Then 'With "h" And "v" args
-    If Argb <> -1 And Argf <> -1 Then
+elseif Argh <> -1 and Argv <> -1 then 'with "h" and "v" args
+    if Argb <> -1 and Argf <> -1 then
         dm.dmPelsWidth        = Argh
         dm.dmPelsHeight       = Argv
         dm.dmBitsPerPel       = Argb
         dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_PELSWIDTH Or DM_PELSHEIGHT Or DM_BITSPERPEL Or DM_DISPLAYFREQUENCY
+        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL or DM_DISPLAYFREQUENCY
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    Elseif Argb = -1 And Argf <> -1 Then
+    elseif Argb = -1 and Argf <> -1 then
         dm.dmPelsWidth        = Argh
         dm.dmPelsHeight       = Argv
         dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_PELSWIDTH Or DM_PELSHEIGHT Or DM_DISPLAYFREQUENCY
+        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_DISPLAYFREQUENCY
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    Elseif Argb <> -1 And Argf = -1 Then
+    elseif Argb <> -1 and Argf = -1 then
         dm.dmPelsWidth        = Argh
         dm.dmPelsHeight       = Argv
         dm.dmBitsPerPel       = Argb
-        dm.dmFields           = DM_PELSWIDTH Or DM_PELSHEIGHT Or DM_BITSPERPEL
+        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    Else Argb = -1 And Argf = -1
+    else Argb = -1 and Argf = -1
         dm.dmPelsWidth        = Argh
         dm.dmPelsHeight       = Argv
-        dm.dmFields           = DM_PELSWIDTH Or DM_PELSHEIGHT
+        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    End If
-Else                                                'Without "h" And "v" args
-    If Argb <> -1 And Argf <> -1 Then
+    end if
+else                                                'Without "h" and "v" args
+    if Argb <> -1 and Argf <> -1 then
         dm.dmBitsPerPel       = Argb
         dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_BITSPERPEL Or DM_DISPLAYFREQUENCY
+        dm.dmFields           = DM_BITSPERPEL or DM_DISPLAYFREQUENCY
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    Elseif Argb = -1 And Argf <> -1 Then
+    elseif Argb = -1 and Argf <> -1 then
         dm.dmDisplayFrequency = Argf
         dm.dmFields           = DM_DISPLAYFREQUENCY
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    Elseif Argb <> -1 And Argf = -1 Then
+    elseif Argb <> -1 and Argf = -1 then
         dm.dmBitsPerPel       = Argb
         dm.dmFields           = DM_DISPLAYFREQUENCY
         result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    End If
+    end if
     
-End If 
+end if 
 
-Select Case result
-    Case DISP_CHANGE_SUCCESSFUL
-        Print GetResource(dcSUCCESSFUL)
-    Case DISP_CHANGE_BADDUALVIEW
-        Print GetResource(dcBADDUALVIEW)
-    Case DISP_CHANGE_BADFLAGS
-        Print GetResource(dcBADFLAGS)
-    Case DISP_CHANGE_BADMODE
-        Print GetResource(dcBADMODE)
-    Case DISP_CHANGE_BADPARAM
-        Print GetResource(dcBADPARAM)
-    Case DISP_CHANGE_FAILED
-        Print GetResource(dcFAILED)
-    Case DISP_CHANGE_NOTUPDATED
-        Print GetResource(dcNOTUPDATED)
-    Case DISP_CHANGE_RESTART
-        Print GetResource(dcRESTART)
-    Case Else
-        Print GetResource(dcUNKNOWN)
-End Select
+select case result
+    case DISP_CHANGE_SUCCESSFUL
+        print GetResource(dcSUCCESSFUL)
+    case DISP_CHANGE_BADDUALVIEW
+        print GetResource(dcBADDUALVIEW)
+    case DISP_CHANGE_BADFLAGS
+        print GetResource(dcBADFLAGS)
+    case DISP_CHANGE_BADMODE
+        print GetResource(dcBADMODE)
+    case DISP_CHANGE_BADPARAM
+        print GetResource(dcBADPARAM)
+    case DISP_CHANGE_FAILED
+        print GetResource(dcFAILED)
+    case DISP_CHANGE_NOTUPDATED
+        print GetResource(dcNOTUPDATED)
+    case DISP_CHANGE_RESTART
+        print GetResource(dcRESTART)
+    case else
+        print GetResource(dcUNKNOWN)
+end select
 
 
 
