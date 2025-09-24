@@ -1,0 +1,52 @@
+name: Compile SETRES
+
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Cache Scoop packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~\scoop
+        key: ${{ runner.os }}-scoop-${{ hashFiles('**/*.bas', '**/*.rc') }}
+        restore-keys: |
+          ${{ runner.os }}-scoop-
+
+    - name: Install With Scoop
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        irm get.scoop.sh | iex
+        scoop install https://github.com/woyxiang/slug/raw/refs/heads/master/bucket/FreeBASIC-winlibs-gcc.json
+
+    - name: Compile binaries
+      shell: powershell
+      run: |
+        mkdir 32-bit, 64-bit -Force
+        fbc32 setres.bas lang.rc -x 32-bit/setres.exe
+        fbc64 setres.bas lang.rc -x 64-bit/setres.exe
+
+    - name: Verify executables
+      shell: powershell
+      run: |
+        if (-not (Test-Path "32-bit/setres.exe")) { throw "32-bit build failed" }
+        if (-not (Test-Path "64-bit/setres.exe")) { throw "64-bit build failed" }
+        Write-Output "Build successful - files created"
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: setres-binaries
+        path: |
+          32-bit/setres.exe
+          64-bit/setres.exe
+        retention-days: 30
+        
