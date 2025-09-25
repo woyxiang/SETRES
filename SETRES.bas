@@ -24,7 +24,8 @@ function GetResource(byval uID as UINT) as string
 end function
 
 sub ErrPage(byval code as integer)
-    #ifdef __VERSION__    
+    #ifdef __VERSION__ 
+        print  
         print "        SETRES v" &  __VERSION__, "https://github.com/woyxiang/SETRES"
         print "==============================================================================="
     #endif
