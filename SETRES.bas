@@ -5,6 +5,10 @@
 #define INDENT space(8)
 #define PrintError(text) color 12 : print text : color 7
 
+'#If Not defined(__VERSION__)
+    'Print "Compile Date (ISO): " & __DATE_ISO__ & "fbc-" & __FB_VERSION__
+'#EndIf
+
 
 dim position as integer, arg as string
 dim as integer Argh, Argv, Argb, Argf
@@ -20,6 +24,10 @@ function GetResource(byval uID as UINT) as string
 end function
 
 sub ErrPage(byval code as integer)
+#ifdef __VERSION__    
+    print "        SETRES v" &  __VERSION__, "https://github.com/woyxiang/SETRES"
+    print "==============================================================================="
+#endif
     print
     print GetResource(ABOUT_ME)
     print 
