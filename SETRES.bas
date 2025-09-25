@@ -19,7 +19,7 @@ function GetResource(byval uID as UINT) as string
     return str(buffer)
 end function
 
-sub ErrPage(byval index as integer)
+sub ErrPage(byval code as integer)
     print
     print GetResource(ABOUT_ME)
     print 
@@ -42,16 +42,16 @@ sub ErrPage(byval index as integer)
     print INDENT;:print GetResource(THE_WARNING)
     print 
     print 
-    if index = 1 then
+    if code = 101 then
     	'print "错误： 提供的参数无法识别"
         PrintError(GetResource(UNRECOGNISED))
 		print
-    	stop index
-    elseif index = 0 then
+    	end code
+    elseif code = 100 then
     	'print "错误： 提供的命令行参数数量错误。"
         PrintError(GetResource(WRONG_NUMBER))
 		print    	
-    	stop index    	
+    	end code    	
     EndIf
 end sub
 
@@ -81,12 +81,12 @@ do
         case "f"
             Argf = abs(int(val(mid(arg, 2))))
         case else
-            ErrPage 1
+            ErrPage 101
     end select    
     position += 1
 loop
 if (position = 1) then
-    ErrPage 0
+    ErrPage 100
 end if
 
 'Initialize
@@ -95,7 +95,7 @@ dm.dmSize = sizeof(dm)
 
 'Submit changes
 if (Argh=-1) xor (Argv=-1) then
-    ErrPage 0
+    ErrPage 100
 elseif Argh <> -1 and Argv <> -1 then 'with "h" and "v" args
     if Argb <> -1 and Argf <> -1 then
         dm.dmPelsWidth        = Argh
@@ -143,22 +143,31 @@ end if
 select case result
     case DISP_CHANGE_SUCCESSFUL
         print GetResource(dcSUCCESSFUL)
+        end 0
     case DISP_CHANGE_BADDUALVIEW
-        print GetResource(dcBADDUALVIEW)
+        PrintError(GetResource(dcBADDUALVIEW))
+        end 102
     case DISP_CHANGE_BADFLAGS
-        print GetResource(dcBADFLAGS)
+        PrintError(GetResource(dcBADFLAGS))
+        end 103
     case DISP_CHANGE_BADMODE
-        print GetResource(dcBADMODE)
+        PrintError(GetResource(dcBADMODE))
+        end 104
     case DISP_CHANGE_BADPARAM
-        print GetResource(dcBADPARAM)
+        PrintError(GetResource(dcBADPARAM))
+        end 105
     case DISP_CHANGE_FAILED
-        print GetResource(dcFAILED)
+        PrintError(GetResource(dcFAILED))
+        end 106
     case DISP_CHANGE_NOTUPDATED
-        print GetResource(dcNOTUPDATED)
+        PrintError(GetResource(dcNOTUPDATED))
+        end 107
     case DISP_CHANGE_RESTART
-        print GetResource(dcRESTART)
+        PrintError(GetResource(dcRESTART))
+        end 108
     case else
-        print GetResource(dcUNKNOWN)
+        PrintError(GetResource(dcUNKNOWN))
+        end 150
 end select
 
 
