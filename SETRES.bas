@@ -43,12 +43,10 @@ sub ErrPage(byval code as integer)
     print 
     print 
     if code = 101 then
-    	'print "错误： 提供的参数无法识别"
         PrintError(GetResource(UNRECOGNISED))
 		print
     	end code
     elseif code = 100 then
-    	'print "错误： 提供的命令行参数数量错误。"
         PrintError(GetResource(WRONG_NUMBER))
 		print    	
     	end code    	
