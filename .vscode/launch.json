@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
-            "args": ["h"],
+            "args": ["f"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

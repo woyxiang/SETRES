@@ -109,27 +109,32 @@ sub main()
     'Submit changes
     if (Argh=-1) xor (Argv=-1) then
         ErrPage 100
-    elseif Argh <> -1 and Argv <> -1 then 'with "h" and "v" args
-        if Argb <> -1 and Argf <> -1 then
+    elseif Argh <> -1 and Argv <> -1 then            'with "h" and "v" args
+
+        if Argb <> -1 and Argf <> -1 then            'h v b f args
+            if Argb=0 or Argf=0 then ErrPage(100)
             dm.dmPelsWidth        = Argh
             dm.dmPelsHeight       = Argv
             dm.dmBitsPerPel       = Argb
             dm.dmDisplayFrequency = Argf
             dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL or DM_DISPLAYFREQUENCY
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        elseif Argb = -1 and Argf <> -1 then
+        elseif Argb = -1 and Argf <> -1 then         'h v f args
+            if Argf=0 then ErrPage(100)
             dm.dmPelsWidth        = Argh
             dm.dmPelsHeight       = Argv
             dm.dmDisplayFrequency = Argf
             dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_DISPLAYFREQUENCY
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        elseif Argb <> -1 and Argf = -1 then
+        elseif Argb <> -1 and Argf = -1 then         'h v b args
+            if Argb=0 then ErrPage(100)
             dm.dmPelsWidth        = Argh
             dm.dmPelsHeight       = Argv
             dm.dmBitsPerPel       = Argb
             dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        else Argb = -1 and Argf = -1
+        else Argb = -1 and Argf = -1                'h v args
+            if Argh=0 or Argv=0 then ErrPage(100)
             dm.dmPelsWidth        = Argh
             dm.dmPelsHeight       = Argv
             dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT
@@ -137,15 +142,18 @@ sub main()
         end if
     else                                                'Without "h" and "v" args
         if Argb <> -1 and Argf <> -1 then
+            if Argb=0 or Argf=0 then ErrPage(100)       'b f args
             dm.dmBitsPerPel       = Argb
             dm.dmDisplayFrequency = Argf
             dm.dmFields           = DM_BITSPERPEL or DM_DISPLAYFREQUENCY
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        elseif Argb = -1 and Argf <> -1 then
+        elseif Argb = -1 and Argf <> -1 then            'only f arg
+            if Argf=0 then ErrPage(100)
             dm.dmDisplayFrequency = Argf
             dm.dmFields           = DM_DISPLAYFREQUENCY
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        elseif Argb <> -1 and Argf = -1 then
+        elseif Argb <> -1 and Argf = -1 then            'only b arg
+            if Argb=0 then ErrPage(100)
             dm.dmBitsPerPel       = Argb
             dm.dmFields           = DM_DISPLAYFREQUENCY
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
