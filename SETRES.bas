@@ -5,15 +5,15 @@
 #define INDENT space(8)
 #define PrintError(text) color 12 : print text : color 7
 
-'#If Not defined(__VERSION__)
-    'Print "Compile Date (ISO): " & __DATE_ISO__ & "fbc-" & __FB_VERSION__
-'#EndIf
+sub shut(byval code as integer)
+    #ifndef __VERSION__
+        color 11
+        print  __DATE_ISO__ & space(1) & __TIME__ & " compiled with fbc-" & __FB_VERSION__ 
+        color 7
+    #endIf
+    end code
+end sub
 
-
-dim position as integer, arg as string
-dim as integer Argh, Argv, Argb, Argf
-dim as DEVMODE dm
-dim as long result = -10
 
 function GetResource(byval uID as UINT) as string
     dim buffer as wstring * 256
@@ -24,10 +24,10 @@ function GetResource(byval uID as UINT) as string
 end function
 
 sub ErrPage(byval code as integer)
-#ifdef __VERSION__    
-    print "        SETRES v" &  __VERSION__, "https://github.com/woyxiang/SETRES"
-    print "==============================================================================="
-#endif
+    #ifdef __VERSION__    
+        print "        SETRES v" &  __VERSION__, "https://github.com/woyxiang/SETRES"
+        print "==============================================================================="
+    #endif
     print
     print GetResource(ABOUT_ME)
     print 
@@ -53,128 +53,135 @@ sub ErrPage(byval code as integer)
     if code = 101 then
         PrintError(GetResource(UNRECOGNISED))
 		print
-    	end code
+    	shut code
     elseif code = 100 then
         PrintError(GetResource(WRONG_NUMBER))
 		print    	
-    	end code    	
+    	shut code    	
     EndIf
 end sub
 
+sub main()
 
-'Initialize arg variables
-Argh = -1
-Argv = -1
-Argb = -1
-Argf = -1
+    dim position as integer, arg as string
+    dim as integer Argh, Argv, Argb, Argf
+    dim as DEVMODE dm
+    dim as long result = -10
+
+    'Initialize arg variables
+    Argh = -1
+    Argv = -1
+    Argb = -1
+    Argf = -1
 
 
-'Parsing args
-position = 1
-do
-	arg = command(position)
-    if (len(arg) = 0) then 'exit parsing if no args
-        exit do
+    'Parsing args
+    position = 1
+    do
+        arg = command(position)
+        if (len(arg) = 0) then 'exit parsing if no args
+            exit do
+        end if
+        
+        select case left(arg, 1)
+            case "h"
+                Argh = abs(int(val(mid(arg, 2))))
+            case "v"
+                Argv = abs(int(val(mid(arg, 2))))
+            case "b"
+                Argb = abs(int(val(mid(arg, 2))))
+            case "f"
+                Argf = abs(int(val(mid(arg, 2))))
+            case else
+                ErrPage 101
+        end select    
+        position += 1
+    loop
+    if (position = 1) then
+        ErrPage 100
     end if
-    
-    select case left(arg, 1)
-        case "h"
-            Argh = abs(int(val(mid(arg, 2))))
-        case "v"
-            Argv = abs(int(val(mid(arg, 2))))
-        case "b"
-            Argb = abs(int(val(mid(arg, 2))))
-        case "f"
-            Argf = abs(int(val(mid(arg, 2))))
+
+    'Initialize
+    memset @dm, 0, sizeof(dm)
+    dm.dmSize = sizeof(dm)
+
+    'Submit changes
+    if (Argh=-1) xor (Argv=-1) then
+        ErrPage 100
+    elseif Argh <> -1 and Argv <> -1 then 'with "h" and "v" args
+        if Argb <> -1 and Argf <> -1 then
+            dm.dmPelsWidth        = Argh
+            dm.dmPelsHeight       = Argv
+            dm.dmBitsPerPel       = Argb
+            dm.dmDisplayFrequency = Argf
+            dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL or DM_DISPLAYFREQUENCY
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        elseif Argb = -1 and Argf <> -1 then
+            dm.dmPelsWidth        = Argh
+            dm.dmPelsHeight       = Argv
+            dm.dmDisplayFrequency = Argf
+            dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_DISPLAYFREQUENCY
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        elseif Argb <> -1 and Argf = -1 then
+            dm.dmPelsWidth        = Argh
+            dm.dmPelsHeight       = Argv
+            dm.dmBitsPerPel       = Argb
+            dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        else Argb = -1 and Argf = -1
+            dm.dmPelsWidth        = Argh
+            dm.dmPelsHeight       = Argv
+            dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        end if
+    else                                                'Without "h" and "v" args
+        if Argb <> -1 and Argf <> -1 then
+            dm.dmBitsPerPel       = Argb
+            dm.dmDisplayFrequency = Argf
+            dm.dmFields           = DM_BITSPERPEL or DM_DISPLAYFREQUENCY
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        elseif Argb = -1 and Argf <> -1 then
+            dm.dmDisplayFrequency = Argf
+            dm.dmFields           = DM_DISPLAYFREQUENCY
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        elseif Argb <> -1 and Argf = -1 then
+            dm.dmBitsPerPel       = Argb
+            dm.dmFields           = DM_DISPLAYFREQUENCY
+            result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
+        end if
+        
+    end if 
+
+    select case result
+        case DISP_CHANGE_SUCCESSFUL
+            print GetResource(dcSUCCESSFUL)
+            shut 0
+        case DISP_CHANGE_BADDUALVIEW
+            PrintError(GetResource(dcBADDUALVIEW))
+            shut 102
+        case DISP_CHANGE_BADFLAGS
+            PrintError(GetResource(dcBADFLAGS))
+            shut 103
+        case DISP_CHANGE_BADMODE
+            PrintError(GetResource(dcBADMODE))
+            shut 104
+        case DISP_CHANGE_BADPARAM
+            PrintError(GetResource(dcBADPARAM))
+            shut 105
+        case DISP_CHANGE_FAILED
+            PrintError(GetResource(dcFAILED))
+            shut 106
+        case DISP_CHANGE_NOTUPDATED
+            PrintError(GetResource(dcNOTUPDATED))
+            shut 107
+        case DISP_CHANGE_RESTART
+            PrintError(GetResource(dcRESTART))
+            shut 108
         case else
-            ErrPage 101
-    end select    
-    position += 1
-loop
-if (position = 1) then
-    ErrPage 100
-end if
+            PrintError(GetResource(dcUNKNOWN))
+            shut 150
+    end select
 
-'Initialize
-memset @dm, 0, sizeof(dm)
-dm.dmSize = sizeof(dm)
+end sub
 
-'Submit changes
-if (Argh=-1) xor (Argv=-1) then
-    ErrPage 100
-elseif Argh <> -1 and Argv <> -1 then 'with "h" and "v" args
-    if Argb <> -1 and Argf <> -1 then
-        dm.dmPelsWidth        = Argh
-        dm.dmPelsHeight       = Argv
-        dm.dmBitsPerPel       = Argb
-        dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL or DM_DISPLAYFREQUENCY
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    elseif Argb = -1 and Argf <> -1 then
-        dm.dmPelsWidth        = Argh
-        dm.dmPelsHeight       = Argv
-        dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_DISPLAYFREQUENCY
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    elseif Argb <> -1 and Argf = -1 then
-        dm.dmPelsWidth        = Argh
-        dm.dmPelsHeight       = Argv
-        dm.dmBitsPerPel       = Argb
-        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    else Argb = -1 and Argf = -1
-        dm.dmPelsWidth        = Argh
-        dm.dmPelsHeight       = Argv
-        dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    end if
-else                                                'Without "h" and "v" args
-    if Argb <> -1 and Argf <> -1 then
-        dm.dmBitsPerPel       = Argb
-        dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_BITSPERPEL or DM_DISPLAYFREQUENCY
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    elseif Argb = -1 and Argf <> -1 then
-        dm.dmDisplayFrequency = Argf
-        dm.dmFields           = DM_DISPLAYFREQUENCY
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    elseif Argb <> -1 and Argf = -1 then
-        dm.dmBitsPerPel       = Argb
-        dm.dmFields           = DM_DISPLAYFREQUENCY
-        result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-    end if
-    
-end if 
-
-select case result
-    case DISP_CHANGE_SUCCESSFUL
-        print GetResource(dcSUCCESSFUL)
-        end 0
-    case DISP_CHANGE_BADDUALVIEW
-        PrintError(GetResource(dcBADDUALVIEW))
-        end 102
-    case DISP_CHANGE_BADFLAGS
-        PrintError(GetResource(dcBADFLAGS))
-        end 103
-    case DISP_CHANGE_BADMODE
-        PrintError(GetResource(dcBADMODE))
-        end 104
-    case DISP_CHANGE_BADPARAM
-        PrintError(GetResource(dcBADPARAM))
-        end 105
-    case DISP_CHANGE_FAILED
-        PrintError(GetResource(dcFAILED))
-        end 106
-    case DISP_CHANGE_NOTUPDATED
-        PrintError(GetResource(dcNOTUPDATED))
-        end 107
-    case DISP_CHANGE_RESTART
-        PrintError(GetResource(dcRESTART))
-        end 108
-    case else
-        PrintError(GetResource(dcUNKNOWN))
-        end 150
-end select
-
-
-
+main()
