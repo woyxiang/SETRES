@@ -1,7 +1,11 @@
 name: Compile SETRES
 
 on:
-  [push, pull_request]
+  push:
+    paths:
+      - '*.bas'
+      - '*.rc'
+      - '*.bi'
 
 jobs:
   build:
