@@ -33,11 +33,14 @@ EXAMPLES
 
 ## Compile
 
+Download a freeBASIC compiler [here](http://sourceforge.net/project/fbc) 
+or install with scoop `scoop install freebasic`
+
 Clone this repo and then run
 `fbc SETRES.bas lang.rc`
 
 ## Others
 
-这个软件复刻自[Ian Sharpe](www.iansharpe.com)的同名软件SETRES，用法几乎一样。之所以要自己写一个几乎一样的软件的直接原因是原版本不能单独修改刷新率，而我常常要单独修改它，所以就写了一个可以只传递f参数版本。
+这个软件复刻自[Ian Sharpe](https://www.iansharpe.com/)的同名软件SETRES，用法几乎一样。之所以要自己写一个几乎一样的软件的直接原因是原版本不能单独修改刷新率，而我常常要单独修改它，所以就写了一个可以只传递f参数版本。
 
-This tool is inspired by [Ian Sharpe](www.iansharpe.com)'s SETRES. It offers nearly identical functionality but was written from scratch. The main motivation was to add the ability to change only the refresh rate (using the 'f' parameter only), a feature missing from the original.
+This tool is inspired by [Ian Sharpe](https://www.iansharpe.com/)'s SETRES. It offers nearly identical functionality but was written from scratch. The main motivation was to add the ability to change only the refresh rate (using the 'f' parameter only), a feature missing from the original.
