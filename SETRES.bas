@@ -5,12 +5,17 @@
 #define INDENT space(8)
 #define PrintError(text) color 12 : print text : color 7
 
+#define originCodePage GetConsoleOutputCP()
+SetConsoleOutputCP 936  '如果终端是utf8的话会中文会出现乱码，故主函数运行前要把代码页改成936
+
+'theoretically the program will only exit from here.
 sub shut(byval code as integer)
     #ifndef __VERSION__
         color 11
         print  __DATE_ISO__ & space(1) & __TIME__ & " compiled with fbc-" & __FB_VERSION__ 
         color 7
     #endIf
+    SetConsoleOutputCP originCodePage
     end code
 end sub
 
