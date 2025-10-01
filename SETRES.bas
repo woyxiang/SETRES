@@ -1,4 +1,5 @@
-﻿#define unicode
+﻿#cmdline "lang.rc"
+#define unicode
 #include "windows.bi"
 #include "lang.bi"
 #include "string.bi"
