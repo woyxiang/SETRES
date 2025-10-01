@@ -3,8 +3,25 @@
 #include "windows.bi"
 #include "lang.bi"
 #include "string.bi"
+#include "crt.bi"
 #define INDENT space(8)
-#define PrintError(text) color 12 : print text : color 7
+'#define PrintError(text) color 12 : print text : color 7
+
+sub PrintError(byref text as string)
+
+    ' open err for input as #1
+    '     print #1, text
+    ' close #1
+    ' Don't know why this won't work
+    ' so I have to use fprintf
+
+    dim originColor as ULong
+    originColor = color()
+    color 12
+    fprintf(stderr, "%s", text)
+    color loword(originColor), hiword(originColor)
+
+end sub
 
 dim shared as UINT originCodePage 
 originCodePage = GetConsoleOutputCP()
