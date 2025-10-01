@@ -32,8 +32,8 @@ jobs:
         scoop install https://github.com/woyxiang/slug/raw/refs/heads/master/bucket/FreeBASIC-winlibs-gcc.json
 
         mkdir 32-bit, 64-bit -Force
-        fbc32 setres.bas lang.rc -x 32-bit/setres.exe
-        fbc64 setres.bas lang.rc -x 64-bit/setres.exe
+        fbc32 setres.bas -x 32-bit/setres.exe
+        fbc64 setres.bas -x 64-bit/setres.exe
     - name: Verify executables
       shell: powershell
       run: |
