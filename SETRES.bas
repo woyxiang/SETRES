@@ -35,7 +35,9 @@ sub shut(byval code as integer)
         color 7
     #endIf
     SetConsoleOutputCP originCodePage
-    end code
+    if code <> 0 then
+        end code
+    end if
 end sub
 
 
