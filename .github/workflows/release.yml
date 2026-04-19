@@ -15,7 +15,9 @@ jobs:
 
     - name: Extract version from tag
       id: version
-      run: echo "VERSION=${Tag#v}" >> $GITHUB_OUTPUT
+      run:
+        $version = $env:Tag -replace '^v', '' 
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
       env:
         Tag: ${{ github.ref_name }}
 
