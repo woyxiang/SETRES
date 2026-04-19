@@ -1,0 +1,61 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Extract version from tag
+      id: version
+      run: echo "VERSION=${Tag#v}" >> $GITHUB_OUTPUT
+      env:
+        Tag: ${{ github.ref_name }}
+
+    - name: Cache Scoop packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~\scoop
+        key: ${{ runner.os }}-scoop-v1
+        restore-keys: |
+          ${{ runner.os }}-scoop-
+
+    - name: Compile binaries
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        irm get.scoop.sh | iex
+        scoop install https://github.com/woyxiang/slug/raw/refs/heads/master/bucket/FreeBASIC-winlibs-gcc.json
+
+        mkdir 32-bit, 64-bit -Force
+        fbc32 -d __VERSION__="${{ steps.version.outputs.VERSION }}" setres.bas -x 32-bit/setres.exe
+        fbc64 -d __VERSION__="${{ steps.version.outputs.VERSION }}" setres.bas -x 64-bit/setres.exe
+    - name: Verify executables
+      shell: powershell
+      run: |
+        if (-not (Test-Path "32-bit/setres.exe")) { throw "32-bit build failed" }
+        if (-not (Test-Path "64-bit/setres.exe")) { throw "64-bit build failed" }
+        Write-Output "Build successful - files created"
+
+    - name: Package binaries
+      shell: powershell
+      run: |
+        Compress-Archive -Path 32-bit/setres.exe -DestinationPath 32-bit/SETRES-686.zip
+        Compress-Archive -Path 64-bit/setres.exe -DestinationPath 64-bit/SETRES-x86-64.zip
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          32-bit/SETRES-686.zip
+          64-bit/SETRES-x86-64.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
