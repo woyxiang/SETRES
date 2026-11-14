@@ -1,5 +1,5 @@
 # SETRES
-![GitHub language count](https://img.shields.io/github/languages/count/woyxiang/setres) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/woyxiang/setres/build.yml) ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/woyxiang/setres/latest/total) ![Scoop License](https://img.shields.io/scoop/l/SETRES?bucket=https%3A%2F%2Fgithub.com%2Fwoyxiang%2Fslug) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/woyxiang/setres)
+![GitHub language count](https://img.shields.io/github/languages/count/woyxiang/setres) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/woyxiang/setres/build.yml) ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/woyxiang/setres/latest/total)  ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/woyxiang/setres)
 
 
 
