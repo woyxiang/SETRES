@@ -111,7 +111,7 @@ sub main()
             exit do
         end if
         
-        select case left(arg, 1)
+        select case lcase(left(arg, 1))   'accept both upper and lower case letters
             case "h"
                 Argh = abs(int(val(mid(arg, 2))))
             case "v"
