@@ -1,4 +1,4 @@
-﻿#cmdline "lang.rc"
+#cmdline "lang.rc"
 #define unicode
 #include "windows.bi"
 #include "lang.bi"
@@ -20,7 +20,7 @@ sub PrintError(byref text as string)
     color 12
     fprintf(stderr, "%s", text)
     print
-    color loword(originColor), hiword(originColor)
+    color originColor          ' Color() 只返回前景色，不能拆 loword/hiword
 
 end sub
 
@@ -46,8 +46,17 @@ function GetResource(byval uID as UINT) as string
     dim buffer as wstring * 256
     dim result as long
     result = LoadString(GetModuleHandle(NULL), uID, @buffer, 256)
-    'print buffer
-    return str(buffer)
+    if result = 0 then return ""        ' 资源缺失时返回空串，而不是输出未初始化的缓冲区
+    ' 显式按控制台代码页转换，不依赖系统 ANSI 代码页(GetACP)
+    dim cp as UINT = GetConsoleOutputCP()
+    if cp = 0 then cp = CP_ACP
+    dim n as long = WideCharToMultiByte(cp, 0, cast(PCWSTR, strptr(buffer)), result, NULL, 0, NULL, NULL)
+    if n <= 0 then return ""
+    dim buf as zstring ptr = callocate(n + 1)
+    WideCharToMultiByte(cp, 0, cast(PCWSTR, strptr(buffer)), result, buf, n, NULL, NULL)
+    dim sOut as string = *buf
+    deallocate buf
+    return sOut
 end function
 
 sub ErrPage(byval code as integer)
@@ -128,6 +137,8 @@ sub main()
     if (position = 1) then
         ErrPage 1
     end if
+    ' 统一校验：h/v/b/f 任一被显式给出且为 0（或非数字），都算参数错误
+    if Argh = 0 or Argv = 0 or Argb = 0 or Argf = 0 then ErrPage 1
 
     'Initialize
     memset @dm, 0, sizeof(dm)
@@ -160,7 +171,7 @@ sub main()
             dm.dmBitsPerPel       = Argb
             dm.dmFields           = DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
-        else Argb = -1 and Argf = -1                'h v args
+        else  'Argb = -1 and Argf = -1  (h v args)
             if Argh=0 or Argv=0 then ErrPage(1)
             dm.dmPelsWidth        = Argh
             dm.dmPelsHeight       = Argv
