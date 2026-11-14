@@ -182,7 +182,7 @@ sub main()
         elseif Argb <> -1 and Argf = -1 then            'only b arg
             if Argb=0 then ErrPage(1)
             dm.dmBitsPerPel       = Argb
-            dm.dmFields           = DM_DISPLAYFREQUENCY
+            dm.dmFields           = DM_BITSPERPEL
             result = ChangeDisplaySettings(@dm, CDS_UPDATEREGISTRY)
         end if
         
