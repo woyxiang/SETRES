@@ -58,6 +58,7 @@ jobs:
       run: |
         # standalone 版 fbc 编 .rc 时固定调用 GoRC，而这个包只带 windres，
         # 所以先用 windres 把 lang.rc 编成资源对象，再用 -z nocmdline 跳过 #cmdline
+        $env:PATH = "$env:USERPROFILE\scoop\shims;$env:PATH"
         $fbDir = (scoop prefix freebasic-fbxl).Trim()
         mkdir 32-bit, 64-bit -Force
         foreach ($arch in '32', '64') {
