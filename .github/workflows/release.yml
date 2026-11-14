@@ -21,6 +21,29 @@ jobs:
       env:
         Tag: ${{ github.ref_name }}
 
+    - name: Prepare release notes
+      run: |
+        # 附注 tag 的说明作为 release 正文；空消息或轻量 tag 则只保留 GitHub 自动生成的变更链接
+        # 不用 git 输出：PS 5.1 按系统代码页解码会弄乱中文，走 API 的 JSON 是可靠 UTF-8
+        $headers = @{ Authorization = "token $($env:GITHUB_TOKEN)"; 'User-Agent' = 'release-notes' }
+        try {
+          $ref = Invoke-RestMethod "https://api.github.com/repos/${{ github.repository }}/git/ref/tags/$($env:Tag)" -Headers $headers
+          if ($ref.object.type -eq 'tag') {
+            $tagObj = Invoke-RestMethod $ref.object.url -Headers $headers
+            [IO.File]::WriteAllText("$PWD/release_notes.md", $tagObj.message, [Text.UTF8Encoding]::new($false))
+            Write-Output "release notes: from annotated tag message"
+          } else {
+            Set-Content -Path release_notes.md -Value '' -Encoding ascii
+            Write-Output "release notes: lightweight/empty tag, GitHub auto notes only"
+          }
+        } catch {
+          Write-Warning "could not fetch tag message, falling back to auto notes: $_"
+          Set-Content -Path release_notes.md -Value '' -Encoding ascii
+        }
+      env:
+        Tag: ${{ github.ref_name }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Cache Scoop packages
       uses: actions/cache@v4
       with:
@@ -96,6 +119,8 @@ jobs:
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
+        body_path: release_notes.md
+        generate_release_notes: true
         files: |
           32-bit/SETRES-686.zip
           64-bit/SETRES-x86-64.zip
