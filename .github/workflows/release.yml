@@ -53,22 +53,25 @@ jobs:
         }
         if (-not $ok) { throw "FreeBASIC install failed - fbc32/fbc64 not found" }
 
-        # fbc 1.20.1(fbxl 包)只在 bin\win64 下带 GoRC.exe，而 SETRES.bas 的 #cmdline "lang.rc"
-        # 会让 fbc32 去 bin\win32 找资源编译器，缺文件时报 error 91
-        $fbDir = (scoop prefix freebasic-fbxl).Trim()
-        $gorc32 = Join-Path $fbDir 'bin\win32\GoRC.exe'
-        if (-not (Test-Path $gorc32)) {
-          Copy-Item (Join-Path $fbDir 'bin\win64\GoRC.exe') $gorc32 -Force
-          Write-Output "copied GoRC.exe -> $gorc32"
-        }
-
     - name: Compile binaries
       shell: powershell
       run: |
+        # standalone 版 fbc 编 .rc 时固定调用 GoRC，而这个包只带 windres，
+        # 所以先用 windres 把 lang.rc 编成资源对象，再用 -z nocmdline 跳过 #cmdline
+        $fbDir = (scoop prefix freebasic-fbxl).Trim()
         mkdir 32-bit, 64-bit -Force
-        fbc32 -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas -x 32-bit/setres.exe
+        foreach ($arch in '32', '64') {
+          $bin = Join-Path $fbDir "bin\win$arch"
+          $env:PATH = "$bin;$env:PATH"
+          & "$bin\windres.exe" --codepage=65001 -I . -D LANG_ENGLISH=9 `
+            -D SUBLANG_ENGLISH_US=1 -D LANG_CHINESE=4 -D SUBLANG_CHINESE_SIMPLIFIED=2 `
+            -i lang.rc -o "lang$arch.o" -O coff
+          if ($LASTEXITCODE -ne 0) { throw "windres failed for win$arch (exit code $LASTEXITCODE)" }
+        }
+
+        fbc32 -z nocmdline -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas lang32.o -x 32-bit/setres.exe
         if ($LASTEXITCODE -ne 0) { throw "32-bit build failed (exit code $LASTEXITCODE)" }
-        fbc64 -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas -x 64-bit/setres.exe
+        fbc64 -z nocmdline -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas lang64.o -x 64-bit/setres.exe
         if ($LASTEXITCODE -ne 0) { throw "64-bit build failed (exit code $LASTEXITCODE)" }
 
     - name: Verify executables
