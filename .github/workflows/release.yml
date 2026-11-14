@@ -70,9 +70,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "windres failed for win$arch (exit code $LASTEXITCODE)" }
         }
 
-        fbc32 -z nocmdline -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas lang32.o -x 32-bit/setres.exe
+        # Windows PowerShell 5.1 不转义参数里的引号，-d '__VERSION__=!"..."' 的引号会被
+        # CRT 剥掉，fbc 收到非法的 !<版本号>；改用 -include 注入版本号，参数里无引号
+        $version = '${{ steps.version.outputs.VERSION }}'
+        Set-Content -Path version.bi -Value ('#define __VERSION__ "' + $version + '"') -Encoding ASCII
+
+        fbc32 -z nocmdline -include version.bi setres.bas lang32.o -x 32-bit/setres.exe
         if ($LASTEXITCODE -ne 0) { throw "32-bit build failed (exit code $LASTEXITCODE)" }
-        fbc64 -z nocmdline -d '__VERSION__=!"${{ steps.version.outputs.VERSION }}"' setres.bas lang64.o -x 64-bit/setres.exe
+        fbc64 -z nocmdline -include version.bi setres.bas lang64.o -x 64-bit/setres.exe
         if ($LASTEXITCODE -ne 0) { throw "64-bit build failed (exit code $LASTEXITCODE)" }
 
     - name: Verify executables
